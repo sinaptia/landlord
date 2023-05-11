@@ -1,5 +1,5 @@
-class TenantConnection < ApplicationRecord
-  belongs_to :customer
+class TenantConnection < ActiveRecord::Base
+  belongs_to :tenant
 
   def shard_name
     Landlord.shard_name(config)
