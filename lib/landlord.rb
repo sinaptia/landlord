@@ -1,5 +1,7 @@
+require "landlord/engine"
+require "landlord/schema_name_generator"
+
 module Landlord
-  class Landlord
   # Returns the connection configuration of the main connection
   def self.main_connection
     ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: "primary").configuration_hash.symbolize_keys.compact_blank
@@ -147,6 +149,5 @@ module Landlord
   # Returns if received schema name exists
   def self.schema_exists?(name)
     ActiveRecord::Base.connection.schema_exists? name
-  end
   end
 end

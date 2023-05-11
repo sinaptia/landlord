@@ -1,5 +1,5 @@
-class TenantConnection < ApplicationRecord
-  belongs_to :customer
+class TenantConnection < LandlordRecord
+  belongs_to :tenant
 
   def shard_name
     Landlord.shard_name(config)
@@ -19,6 +19,8 @@ class TenantConnection < ApplicationRecord
 
     # public is not a valid schema name
     raise if tenant_options[:schema_search_path] == "public"
+
+    pp defaults.merge(tenant_options)
 
     create!(**defaults.merge(tenant_options))
   end

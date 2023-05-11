@@ -1,5 +1,7 @@
-module DbConnectionsFetcher
-  def fetch_db_connections
+class LandlordRecord < ActiveRecord::Base
+  self.abstract_class = true
+
+  def self.fetch_db_connections
     connections = []
 
     role = :writing
@@ -26,4 +28,8 @@ module DbConnectionsFetcher
 
     connections
   end
+
+  # TODO: originally this should go in ApplicationRecord. By extracting this functionality (see tenant.rb:19) into this class to share across models of this gem, this doesn't work.
+  # why we need it?
+  # fetch_db_connections
 end
