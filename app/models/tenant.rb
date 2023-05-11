@@ -1,4 +1,6 @@
-class Tenant < LandlordRecord
+class Tenant < ActiveRecord::Base
+  include Landlord::Concern
+
   has_one :tenant_connection, dependent: :destroy
 
   after_create_commit :create_tenant_connection

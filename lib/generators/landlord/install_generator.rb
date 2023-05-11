@@ -16,6 +16,16 @@ module Landlord
       def create_migrate_tenants_dir
         create_file "db/migrate_tenants/.keep"
       end
+
+      def update_application_record
+        inject_into_class "app/models/application_record.rb", "ApplicationRecord" do
+          <<-STR
+  include Landlord::Concern
+
+  fetch_db_connections
+          STR
+        end
+      end
     end
   end
 end

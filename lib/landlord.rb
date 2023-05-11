@@ -1,3 +1,4 @@
+require "landlord/concern"
 require "landlord/engine"
 require "landlord/schema_name_generator"
 
@@ -48,7 +49,7 @@ module Landlord
     end
   end
 
-  # Switchs to the given connection configuration for the given block
+  # Switches to the given connection configuration for the given block
   # More native option for switching tenants
   def self.switch(connection_configuration, &blk)
     ActiveRecord::Base.connected_to(role: :writing, shard: shard_name(connection_configuration)) do

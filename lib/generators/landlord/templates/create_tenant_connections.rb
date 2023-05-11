@@ -9,7 +9,7 @@ class CreateTenantConnections < ActiveRecord::Migration[6.0]
       t.string :password
       t.string :host
       t.string :port
-      t.string :migrations_paths, default: "db/migrate_tentants"
+      t.string :migrations_paths, default: "db/migrate_tenants"
       t.boolean :database_owner, default: false
       t.references :tenant, foreign_key: true
       t.datetime :created_at, precision: 6, null: false

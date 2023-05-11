@@ -1,4 +1,4 @@
-class TenantConnection < LandlordRecord
+class TenantConnection < ActiveRecord::Base
   belongs_to :tenant
 
   def shard_name
