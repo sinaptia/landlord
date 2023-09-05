@@ -1,0 +1,14 @@
+# default: &default
+#   adapter: postgresql
+#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#   timeout: 5000
+
+# development:
+#   primary:
+#     <<: *default
+#     url: <%= ENV["DATABASE_URL"] %>
+
+# test:
+#   primary:
+#     <<: *default
+#     url: <%= ENV["DATABASE_URL"] %>

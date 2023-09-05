@@ -1,5 +1,5 @@
-class TenantConnection < ApplicationRecord
-  belongs_to :customer
+class TenantConnection < ActiveRecord::Base
+  belongs_to :tenant
 
   def shard_name
     Landlord.shard_name(config)
@@ -8,7 +8,7 @@ class TenantConnection < ApplicationRecord
   def config
     hash = attributes.symbolize_keys.except(:id, :created_at, :updated_at, :database_owner, :default_db_name, :default_env_name, :customer_id).compact_blank
 
-    hash[:pool] = ENV.fetch("RAILS_MAX_THREADS", 5)
+    hash[:pool] ||= ENV.fetch("RAILS_MAX_THREADS", 5)
     hash[:port] = hash[:port].to_i if hash[:port]
     hash
   end
