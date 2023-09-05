@@ -3,6 +3,8 @@ class Tenant < ActiveRecord::Base
 
   has_one :tenant_connection, dependent: :destroy
 
+  validates :name, presence: true, uniqueness: true
+
   after_create_commit :create_tenant_connection
 
   def self.current
@@ -20,8 +22,10 @@ class Tenant < ActiveRecord::Base
 
     ## Hot restart puma
     unless Rails.env.test?
-      pid = File.read(".pumactl_pid").to_i
-      Process.kill("SIGUSR2", pid)
+      # pid = File.read(".pumactl_pid").to_i
+      # Process.kill("SIGUSR2", pid)
+      puts Process.pid
+      Process.kill "SIGUSR2", Process.pid
     end
   end
 end

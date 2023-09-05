@@ -18,11 +18,12 @@ module Landlord
 
         # Stored in the db connections
         begin
-          db_stored_connections_configurations = ActiveRecord::Base.connection.execute("SELECT database, timeout, adapter, schema_search_path, username, password, host, port, migrations_paths FROM tenants_connection").to_a
-          db_stored_connections_configurations.each { |config| config["pool"] = ENV.fetch("RAILS_MAX_THREADS", 5) }
+          db_stored_connections_configurations = ActiveRecord::Base.connection.execute("SELECT database, pool, timeout, adapter, schema_search_path, username, password, host, port, migrations_paths FROM tenant_connections").to_a
+          # db_stored_connections_configurations.each { |config| config["pool"] ||= ENV.fetch("RAILS_MAX_THREADS", 5) }
           db_stored_connections_configurations.each do |connection_configuration|
             connection_configuration = connection_configuration.symbolize_keys
-            connections << handler.establish_connection(connection_configuration, owner_name: owner_name, role: role, shard: TenancyManager.shard_name(connection_configuration))
+            connection_configuration[:pool] ||= ENV.fetch("RAILS_MAX_THREADS", 5)
+            connections << handler.establish_connection(connection_configuration, owner_name: owner_name, role: role, shard: Landlord.shard_name(connection_configuration))
           end
         rescue
           # In migrations, we might not have tenants_connection, it is not neccessary to load them anyways

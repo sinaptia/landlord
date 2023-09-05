@@ -8,6 +8,7 @@ namespace :db do
   end
 
   namespace :tenants do
+    desc "Migrate the tenants database (options: VERSION=x, VERBOSE=false, SCOPE=blog)"
     task migrate: :load_config do
       original_db_config = ActiveRecord::Base.connection_db_config
       ask_again = true
@@ -30,6 +31,7 @@ namespace :db do
       ActiveRecord::Base.establish_connection(original_db_config)
     end
 
+    desc "Rolls the schema back to the previous version (specify steps w/ STEP=n)"
     task rollback: :load_config do
       original_db_config = ActiveRecord::Base.connection_db_config
       ask_again = true

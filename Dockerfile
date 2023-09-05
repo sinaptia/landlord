@@ -1,6 +1,6 @@
 FROM ruby:3.2-alpine
 
-RUN apk add --no-cache --update build-base git imagemagick linux-headers nodejs postgresql-dev tzdata yarn
+RUN apk add --no-cache --update build-base git imagemagick linux-headers nodejs postgresql tzdata yarn
 
 WORKDIR /app
 
