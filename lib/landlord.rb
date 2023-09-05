@@ -1,6 +1,7 @@
 require "landlord/concern"
 require "landlord/engine"
 require "landlord/schema_name_generator"
+require "landlord/version"
 
 module Landlord
   # Returns the connection configuration of the main connection
@@ -36,7 +37,7 @@ module Landlord
     end
   end
 
-  # Switchs to the tenant tenant connection
+  # Switches to the tenant tenant connection
   # More user friendly option for switching tenants
   # It will only establish a new connection if the given connection is not the current connection
   def self.switch_to(tenant, &blk)

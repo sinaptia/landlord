@@ -1,10 +1,15 @@
-# frozen_string_literal: true
-
 source "https://rubygems.org"
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-# Specify your gem's dependencies in landlord.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+gem "pg"
+gem "puma"
+gem "sprockets-rails"
 
-gem "standard", "~> 1.3"
+group :development, :test do
+  # Start debugger with binding.b [https://github.com/ruby/debug]
+  gem "debug"
+  gem "dotenv-rails"
+  gem "standard"
+end

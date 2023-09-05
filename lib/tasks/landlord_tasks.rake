@@ -7,54 +7,56 @@ namespace :db do
     ActiveRecord::Tasks::DatabaseTasks.dump_schema(db_config, :ruby)
   end
 
-  task tenant_migrate: :load_config do
-    original_db_config = ActiveRecord::Base.connection_db_config
-    ask_again = true
-    TenantConnection.order(:id).all.map(&:config).each_with_index do |db_config, index|
-      puts "Migrating #{db_config[:schema_search_path]}... "
+  namespace :tenants do
+    task migrate: :load_config do
+      original_db_config = ActiveRecord::Base.connection_db_config
+      ask_again = true
+      TenantConnection.order(:id).all.map(&:config).each_with_index do |db_config, index|
+        puts "Migrating #{db_config[:schema_search_path]}... "
 
-      # Check in the case tenancy_connection were not localized
-      ask_again = check_env_matching_db_configuration!(original_db_config, db_config) if ask_again
+        # Check in the case tenancy_connection were not localized
+        ask_again = check_env_matching_db_configuration!(original_db_config, db_config) if ask_again
 
-      # Migrate
-      ActiveRecord::Base.establish_connection(db_config)
-      ActiveRecord::Tasks::DatabaseTasks.migrate
+        # Migrate
+        ActiveRecord::Base.establish_connection(db_config)
+        ActiveRecord::Tasks::DatabaseTasks.migrate
 
-      # Use first tenancy_connection for the schema dump
-      next unless index.zero?
-      db_config[:name] = "tenants"
-      ActiveRecord::Tasks::DatabaseTasks.dump_schema(ActiveRecord::DatabaseConfigurations::HashConfig.new(Rails.env, "primary", db_config), :ruby)
+        # Use first tenancy_connection for the schema dump
+        next unless index.zero?
+        db_config[:name] = "tenants"
+        ActiveRecord::Tasks::DatabaseTasks.dump_schema(ActiveRecord::DatabaseConfigurations::HashConfig.new(Rails.env, "primary", db_config), :ruby)
+      end
+    ensure
+      ActiveRecord::Base.establish_connection(original_db_config)
     end
-  ensure
-    ActiveRecord::Base.establish_connection(original_db_config)
-  end
 
-  task tenant_rollback: :load_config do
-    original_db_config = ActiveRecord::Base.connection_db_config
-    ask_again = true
-    TenantConnection.all.map(&:config).each_with_index do |db_config, index|
-      puts "Rollbacking #{db_config[:schema_search_path]}... "
+    task rollback: :load_config do
+      original_db_config = ActiveRecord::Base.connection_db_config
+      ask_again = true
+      TenantConnection.all.map(&:config).each_with_index do |db_config, index|
+        puts "Rollbacking #{db_config[:schema_search_path]}... "
 
-      # Check in the case tenancy_connection were not localized
-      ask_again = check_env_matching_db_configuration!(original_db_config, db_config) if ask_again
+        # Check in the case tenancy_connection were not localized
+        ask_again = check_env_matching_db_configuration!(original_db_config, db_config) if ask_again
 
-      # Migrate
-      ActiveRecord::Base.establish_connection(db_config)
-      ActiveRecord::Base.connection.migration_context.rollback(1)
+        # Migrate
+        ActiveRecord::Base.establish_connection(db_config)
+        ActiveRecord::Base.connection.migration_context.rollback(1)
 
-      # Use first tenancy_connection for the schema dump
-      next unless index.zero?
-      db_config[:name] = "tenants"
-      ActiveRecord::Tasks::DatabaseTasks.dump_schema(OpenStruct.new(db_config), :ruby)
+        # Use first tenancy_connection for the schema dump
+        next unless index.zero?
+        db_config[:name] = "tenants"
+        ActiveRecord::Tasks::DatabaseTasks.dump_schema(OpenStruct.new(db_config), :ruby)
+      end
+    ensure
+      ActiveRecord::Base.establish_connection(original_db_config)
     end
-  ensure
-    ActiveRecord::Base.establish_connection(original_db_config)
   end
 end
 
 # Invoke these tasks after the migration
 Rake::Task["db:migrate"].enhance do
-  Rake::Task["db:tenant_migrate"].invoke
+  Rake::Task["db:tenants:migrate"].invoke
   Rake::Task["db:ruby_public_dump"].invoke
 end
 
